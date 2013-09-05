@@ -5,7 +5,7 @@ A static checking and inference tool for coroutine annotations
 ## Prerequisites
 
 You need the latest [CIL](http://ocaml.org/) snapshot (`develop` branch) and
-[ocamlgraph](http://ocamlgraph.lri.fr/) ≤ 1.8.2 (***warning:*** ocamlgraph 1.8.3 has a
+[ocamlgraph](http://ocamlgraph.lri.fr/) ≤ 1.8.2 ( ***warning:*** ocamlgraph 1.8.3 has a
 [breaking API change](https://github.com/backtracking/ocamlgraph/issues/3)).
 To generate pdf graphs, you also need `dot` from
 [graphviz](http://www.graphviz.org/).
