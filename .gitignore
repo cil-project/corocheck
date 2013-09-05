@@ -2,3 +2,5 @@ _build
 test/inference.o
 test/inference.pdf
 test/inference.dot
+test/inference.cil.*
+test/inference.i
