@@ -71,8 +71,14 @@ EOF
 Then use `cilly` with the `corocheck` feature to analyse it:
 ```
 export CIL_FEATURES=corocheck
-cilly --doCoroCheck --dotFile=test.dot -Wno-attributes -c test.c
+cilly --save-temps --doCoroCheck --dotFile=test.dot -Wno-attributes -c test.c
 ```
+
+***Important:*** the flag `--save-temps` is necessary to get complete results;
+otherwise, CoroCheck would fail to report some missing annotations. On a related
+note, if you `#include` headers containing coroutine functions, you should add
+`--fullInferenceGraph` to get complete results (but this will generate a very
+hard to read .dot file if you have many functions!).
 
 And generate an annotated call graph:
 ```

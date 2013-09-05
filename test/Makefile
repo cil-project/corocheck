@@ -13,7 +13,7 @@ FORCE:
 
 inference.dot: inference.c FORCE
 	$(CILLY) $(COPTS) --load=$(CORO) \
-		--doCoroCheck --dotFile="$@" --coopAttr=coroutine --blockAttr=blocking \
+		--doCoroCheck --dotFile="$@" --save-temps --coopAttr=coroutine --blockAttr=blocking \
 		-c $<
 
 inference.pdf: inference.dot
