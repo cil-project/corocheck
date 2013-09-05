@@ -6,10 +6,12 @@ CORO=../_build/corocheck.cma
 
 export CIL_FEATURES=
 
-.PHONY: all clean
+.PHONY: all clean FORCE
 all: inference.pdf
 
-inference.dot: inference.c
+FORCE:
+
+inference.dot: inference.c FORCE
 	$(CILLY) $(COPTS) --load=$(CORO) \
 		--doCoroCheck --dotFile="$@" --coopAttr=coroutine --blockAttr=blocking \
 		-c $<
