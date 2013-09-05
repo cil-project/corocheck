@@ -60,8 +60,8 @@ let check_type_attr attr ft =
 let coop_attr_name = ref "coroutine_fn"
 let blocking_attr_name = ref "blocking_fn"
 
-let is_coop_type = check_type_attr !coop_attr_name
-let is_blocking_type = check_type_attr !blocking_attr_name
+let is_coop_type ft = check_type_attr !coop_attr_name ft
+let is_blocking_type ft = check_type_attr !blocking_attr_name ft
 
 (* Common operations on varinfo *)
 module V = struct
@@ -260,7 +260,7 @@ let draw filename g =
   close_out chan
 
 let check_blocking v =
-  let callers = G.succ g v in
+  let callers = G.pred g v in
   List.iter (fun c -> match !should_be_coop c, is_coop_type c.vtype with
     | true, true -> E.warn "forbidden call:  %s %s called by %s %s"
         !blocking_attr_name v.vname !coop_attr_name c.vname
@@ -277,7 +277,8 @@ let print_warnings () =
     | _, true, true -> E.warn "conflicting %s/%s annotation: %s" !coop_attr_name !blocking_attr_name v.vname
     | true, false, false -> E.warn "missing %s annotation: %s" !coop_attr_name v.vname
     | false, true, false -> E.warn "spurious %s annotation: %s" !coop_attr_name v.vname
-    | true, false, true -> E.warn "wrong %s annotation: %s" !blocking_attr_name v.vname; check_blocking v
+    | true, false, true -> E.warn "wrong %s annotation (should be %s): %s"
+        !blocking_attr_name !coop_attr_name v.vname; check_blocking v
     | _, _, true -> check_blocking v
     | _, _, _ -> ()
   ) g

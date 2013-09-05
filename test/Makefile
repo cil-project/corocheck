@@ -4,6 +4,8 @@ CORO=../_build/corocheck.cma
 # if CoroCheck has been installed, you can also use:
 # CORO=corocheck
 
+export CIL_FEATURES=
+
 .PHONY: all clean
 all: inference.pdf
 
