@@ -1,0 +1,4 @@
+true: -traverse
+# use_graph instead of package(ocamlgraph) to embed ocamlgraph in the
+# plugin (cf. myocamlbuild.ml)
+<corocheck.*>: package(cil), use_graph

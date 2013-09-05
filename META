@@ -1,0 +1,4 @@
+version = "0.1"
+description = "static checking and inference of coroutine annotations"
+archive(byte,plugin) = "corocheck.cma"
+archive(native,plugin) = "corocheck.cmxs"

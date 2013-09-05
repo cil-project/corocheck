@@ -1,0 +1,4 @@
+_build
+test/inference.o
+test/inference.pdf
+test/inference.dot

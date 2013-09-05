@@ -1,0 +1,84 @@
+# CoroCheck
+
+A static checking and inference tool for coroutine annotations
+
+## Prerequisites
+
+You need the latest [CIL](http://ocaml.org/) (`develop` branch) and
+[ocamlgraph](http://ocamlgraph.lri.fr/) ≤ 1.8.2 (***ocamlgraph 1.8.3 has a
+[breaking API change](https://github.com/backtracking/ocamlgraph/issues/3)***).
+To generate pdf graphs, you also need `dot` from
+[graphviz](http://www.graphviz.org/).
+
+Note that CIL depends on ocaml, findlib and perl.
+To install all dependencies on Debian or Ubuntu:
+```
+apt-get install perl ocaml ocaml-findlib libocamlgraph-ocaml-dev graphviz
+```
+
+Then, download and install the latest CIL snapshot:
+```
+git clone https://github.com/kerneis/cil
+cd cil
+./configure
+make
+make install
+```
+
+### Note for OPAM users
+
+If you use [opam](http://opam.ocamlpro.com/), it is **strongly**
+recommended to use the following `configure` invocation to install CIL:
+
+```
+./configure --prefix=`opam config var prefix`
+```
+
+Also note that ocamlgraph has been updated to 1.8.3 in opam. To install 1.8.2,
+use:
+
+```
+opam install ocamlgraph.1.8.2
+```
+
+## Build and installation
+
+```
+make all install check
+```
+
+`make check` will generate a pdf file with annotated call graph:
+`test/inference.pdf`.
+
+## Usage
+
+Create a test file `test.c`:
+```
+cat << EOF > test.c
+#define coroutine_fn __attribute__((__coroutine_fn__))
+#define blocking_fn __attribute__((__blocking_fn__))
+void coroutine_fn f();
+void blocking_fn g();
+void h() { f(); }
+void couroutine_fn k() { g(); }
+EOF
+```
+
+Then use `cilly` with the `corocheck` feature to analyse it:
+```
+export CIL_FEATURES=corocheck
+cilly --doCoroCheck --dotFile=test.dot -Wno-attributes -c test.c
+```
+
+And generate an annotated call graph:
+```
+dot -Tpdf -o test.pdf test.dot
+```
+See `test/inference.c` and `test/Makefile` for a full example.
+
+## Options
+
+```
+export CIL_FEATURES=corocheck
+cilly --help
+```
