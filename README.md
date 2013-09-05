@@ -4,9 +4,9 @@ A static checking and inference tool for coroutine annotations
 
 ## Prerequisites
 
-You need the latest [CIL](http://ocaml.org/) (`develop` branch) and
-[ocamlgraph](http://ocamlgraph.lri.fr/) ≤ 1.8.2 (***ocamlgraph 1.8.3 has a
-[breaking API change](https://github.com/backtracking/ocamlgraph/issues/3)***).
+You need the latest [CIL](http://ocaml.org/) snapshot (`develop` branch) and
+[ocamlgraph](http://ocamlgraph.lri.fr/) ≤ 1.8.2 (***warning:*** ocamlgraph 1.8.3 has a
+[breaking API change](https://github.com/backtracking/ocamlgraph/issues/3)).
 To generate pdf graphs, you also need `dot` from
 [graphviz](http://www.graphviz.org/).
 
@@ -44,11 +44,15 @@ opam install ocamlgraph.1.8.2
 ## Build and installation
 
 ```
-make all install check
+make all install
 ```
 
-`make check` will generate a pdf file with annotated call graph:
-`test/inference.pdf`.
+To test that everything is working correctly:
+```
+make check
+```
+This generates `test/inference.pdf`, which contains the annotated call graph
+corresponding to `test/inference.c`.
 
 ## Usage
 
@@ -60,7 +64,7 @@ cat << EOF > test.c
 void coroutine_fn f();
 void blocking_fn g();
 void h() { f(); }
-void couroutine_fn k() { g(); }
+void coroutine_fn k() { g(); }
 EOF
 ```
 
