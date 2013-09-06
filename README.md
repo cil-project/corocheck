@@ -25,6 +25,11 @@ make
 make install
 ```
 
+If you do not wish to install CIL and CoroCheck globally (note that both
+of them provide a `make uninstall` target), see [below the instructions
+for QEMU](#qemu) for an example of how to compile and use corocheck
+without installing them.
+
 ### Note for OPAM users
 
 If you use [opam](http://opam.ocamlpro.com/), it is **strongly**
@@ -54,7 +59,7 @@ make check
 This generates `test/inference.pdf`, which contains the annotated call graph
 corresponding to `test/inference.c`.
 
-## Usage
+## Small example
 
 Create a test file `test.c`:
 ```
@@ -86,9 +91,38 @@ dot -Tpdf -o test.pdf test.dot
 ```
 See `test/inference.c` and `test/Makefile` for a full example.
 
-## Options
+## QEMU
+
+CoroCheck can be used to check the `coroutine_fn` annotations used in
+[QEMU](http://wiki.qemu.org/). Assuming you have installed the
+dependencies listed in [prerequisites](#prerequisites), here is how to
+proceed to build QEMU for target `x86_64-softmmu` with CoroCheck
+warnings. (You should be able to build any QEMU target, but we test
+mainly on this one for the moment.)
 
 ```
-export CIL_FEATURES=corocheck
-cilly --help
+export ROOTDIR=$(pwd)
+git clone https://github.com/kerneis/cil
+git clone https://github.com/kerneis/corocheck
+git clone https://github.com/qemu/qemu
+cd cil
+./configure
+make
+cd ../corocheck
+make all OCAMLPATH=$ROOTDIR/cil/lib
+cd ../qemu
+mkdir -p bin/corocheck
+cd bin/corocheck
+../../configure \
+  --disable-werror --target-list=x86_64-softmmu \
+  --with-coroutine=ucontext    \
+  --cc="$ROOTDIR/cil/bin/cilly" \
+  --extra-cflags="\
+    -U__SSE2__ -w \
+    -Dcoroutine_fn='__attribute__((__coroutine_fn__))' \
+    -Dblocking_fn='__attribute__((__blocking_fn__))' \
+    --load=$ROOTDIR/corocheck/_build/corocheck.cma \
+    --save-temps --noMakeStaticGlobal --useLogicalOperators \
+    --useCaseRange --doCoroCheck"
+make
 ```
