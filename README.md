@@ -97,8 +97,10 @@ CoroCheck can be used to check the `coroutine_fn` annotations used in
 [QEMU](http://wiki.qemu.org/). Assuming you have installed the
 dependencies listed in [prerequisites](#prerequisites), here is how to
 proceed to build QEMU for target `x86_64-softmmu` with CoroCheck
-warnings. (You should be able to build any QEMU target, but we test
-mainly on this one for the moment.)
+warnings and build pdfs of annotated callgraphs.
+
+(You should be able to build any QEMU target, but we test mainly on this
+one for the moment.)
 
 ```
 export ROOTDIR=$(pwd)
@@ -111,6 +113,21 @@ make
 cd ../corocheck
 make all OCAMLPATH=$ROOTDIR/cil/lib
 cd ../qemu
+patch -p1 << EOF
+diff --git a/include/block/coroutine.h b/include/block/coroutine.h
+index 4232569..3bafa4e 100644
+--- a/include/block/coroutine.h
++++ b/include/block/coroutine.h
+@@ -44,7 +44,7 @@
+  *       ....
+  *   }
+  */
+-#define coroutine_fn
++#define coroutine_fn __attribute__((coroutine_fn))
+ 
+ typedef struct Coroutine Coroutine;
+ 
+EOF
 mkdir -p bin/corocheck
 cd bin/corocheck
 ../../configure \
@@ -119,10 +136,9 @@ cd bin/corocheck
   --cc="$ROOTDIR/cil/bin/cilly" \
   --extra-cflags="\
     -U__SSE2__ -w \
-    -Dcoroutine_fn='__attribute__((__coroutine_fn__))' \
-    -Dblocking_fn='__attribute__((__blocking_fn__))' \
     --load=$ROOTDIR/corocheck/_build/corocheck.cma \
     --save-temps --noMakeStaticGlobal --useLogicalOperators \
     --useCaseRange --doCoroCheck"
 make
+find . -name "*.dot" -exec dot -Tpdf -o {}.pdf {} \;
 ```
