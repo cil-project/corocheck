@@ -99,8 +99,7 @@ dependencies listed in [prerequisites](#prerequisites), here is how to
 proceed to build QEMU for target `x86_64-softmmu` with CoroCheck
 warnings and build pdfs of annotated callgraphs.
 
-(You should be able to build any QEMU target, but we test mainly on this
-one for the moment.)
+Look at `nbd.dot.pdf` for a small yet interesting example.
 
 ```
 export ROOTDIR=$(pwd)
@@ -139,6 +138,9 @@ cd bin/corocheck
     --load=$ROOTDIR/corocheck/_build/corocheck.cma \
     --save-temps --noMakeStaticGlobal --useLogicalOperators \
     --useCaseRange --doCoroCheck"
-make
+make 2>&1 | tee make.log | grep ^Warning:
 find . -name "*.dot" -exec dot -Tpdf -o {}.pdf {} \;
 ```
+
+Note: you should be able to build any QEMU target, but we test mainly
+with this one for the moment. Please report any bugs. Thanks!
