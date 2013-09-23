@@ -245,9 +245,9 @@ module ColoredG = struct
   let get_subgraph v = None
   let default_edge_attributes g = []
   let edge_attributes e =
-    let src, dst = G.E.src e, G.E.dst e in
-    if is_blocking_type src.vtype &&
-    (!should_be_coop dst || is_coop_type dst.vtype)
+    let caller, callee = G.E.src e, G.E.dst e in
+    if is_blocking_type callee.vtype &&
+    (!should_be_coop caller || is_coop_type caller.vtype)
     then [ `Style `Dashed; `Color 0xff0000 ]
     else []
 end
@@ -259,15 +259,15 @@ let draw filename g =
   Draw.output_graph chan g;
   close_out chan
 
-let check_blocking v =
-  let callers = G.pred g v in
+let check_blocking callee =
+  let callers = G.pred g callee in
   List.iter (fun c -> match !should_be_coop c, is_coop_type c.vtype with
     | true, true -> E.warn "forbidden call:  %s %s called by %s %s"
-        !blocking_attr_name v.vname !coop_attr_name c.vname
+        !blocking_attr_name callee.vname !coop_attr_name c.vname
     | true, false -> E.warn "suspicious call: %s %s called by (missing) %s %s"
-        !blocking_attr_name  v.vname !coop_attr_name c.vname
+        !blocking_attr_name  callee.vname !coop_attr_name c.vname
     | false, true -> E.warn "suspicious call: %s %s called by (spurious) %s %s"
-        !blocking_attr_name v.vname !coop_attr_name c.vname
+        !blocking_attr_name callee.vname !coop_attr_name c.vname
     | false, false -> ()
   ) callers
 
